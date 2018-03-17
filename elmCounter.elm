@@ -1,8 +1,8 @@
+import Http
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
 import Json.Decode as Decode
+import Html.Events exposing (..)
 
 
 
@@ -14,11 +14,6 @@ main =
     , subscriptions = subscriptions
     }
 
-
-
--- MODEL
-
-
 type alias Model =
   { content : String }
 
@@ -27,15 +22,10 @@ init : String -> (Model, Cmd msg)
 init topic =
   ( Model topic, Cmd.none )
 
-
-
--- UPDATE
-
-
 type Msg
-  = MorePlease
+  = Add
   | NewContent (Result Http.Error String)
-  | TitlePlease
+  | Title
   | SetOne
 
 
@@ -45,10 +35,10 @@ update msg model =
     SetOne ->
       (Model "1", Cmd.none)
 
-    MorePlease ->
+    add ->
       (model, getBody )
 
-    TitlePlease ->
+    Title ->
       (model, getTitle )
 
     NewContent (Ok newUrl) ->
@@ -57,32 +47,18 @@ update msg model =
     NewContent (Err _) ->
       (Model "456", Cmd.none)
 
-
-
--- VIEW
-
-
-view : Model -> Html Msg
+w : Model -> Html Msg
 view model =
   div []
     [ h2 [] [text model.content]
-    , button [ onClick MorePlease ] [ text "Get body" ]
-    , button [ onClick TitlePlease ] [ text "Get title" ]
+    , button [ onClick Add ] [ text "Get body" ]
+    , button [ onClick Title ] [ text "Get title" ]
     , button [ onClick SetOne ] [ text "Set head to one" ]
     ]
-
-
--- SUBSCRIPTIONS
-
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
-
-
-
--- HTTP
-
 
 getBody : Cmd Msg
 getBody =
@@ -104,7 +80,6 @@ getTitle =
         "https://jsonplaceholder.typicode.com/posts/1"
   in
     Http.send NewContent (Http.get url decodeGifUrl2)
-
 
 decodeGifUrl2 : Decode.Decoder String
 decodeGifUrl2 =
